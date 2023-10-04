@@ -1,0 +1,20 @@
+CREATE TABLE MenuItems (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(255),
+    name VARCHAR(255),
+    price DECIMAL(10, 2),
+    image_url VARCHAR(255)
+);
+
+
+INSERT INTO MenuItems (category, name, price, image_url)
+VALUES
+    ('Salads', 'Green Salad', 8.99, 'https://www.example.com/green-salad.jpg'),
+    ('Salads', 'Quinoa Salad', 9.99, 'https://www.example.com/quinoa-salad.jpg'),
+    ('Salads', 'Chicken Caesar Salad', 10.99, 'https://www.example.com/caesar-salad.jpg'),
+    ('Main Courses', 'Grilled Salmon', 14.99, 'https://www.example.com/grilled-salmon.jpg'),
+    ('Main Courses', 'Vegetable Stir-Fry', 12.99, 'https://www.example.com/vegetable-stir-fry.jpg'),
+    ('Main Courses', 'Lean Turkey Burger', 11.99, 'https://www.example.com/turkey-burger.jpg'),
+    ('Smoothies', 'Green Energy Smoothie', 5.99, 'https://www.example.com/green-smoothie.jpg'),
+    ('Smoothies', 'Berry Blast Smoothie', 5.99, 'https://www.example.com/berry-smoothie.jpg'),
+    ('Smoothies', 'Mango Tango Smoothie', 5.99, 'https://www.example.com/mango-smoothie.jpg');
