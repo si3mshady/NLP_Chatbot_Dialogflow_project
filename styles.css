@@ -58,6 +58,11 @@ header {
     height: auto;
 }
 
+.item img:hover {
+    transform: scale(1.09);
+    transition: transform 0.3s ease-in-out;
+}
+
 .price {
     font-weight: bold;
     color: #ff6f61;
