@@ -1,20 +1,38 @@
-CREATE TABLE MenuItems (
-    item_id INT AUTO_INCREMENT PRIMARY KEY,
-    category VARCHAR(255),
-    name VARCHAR(255),
-    price DECIMAL(10, 2),
-    image_url VARCHAR(255)
-);
+import mysql.connector
 
+# Replace these with your MySQL connection details
+config = {
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',  # Usually 'localhost' if it's on your machine
+    'database': 'QuickBiteDelights',
+}
 
-INSERT INTO MenuItems (category, name, price, image_url)
-VALUES
-    ('Salads', 'Green Salad', 8.99, 'https://www.example.com/green-salad.jpg'),
-    ('Salads', 'Quinoa Salad', 9.99, 'https://www.example.com/quinoa-salad.jpg'),
-    ('Salads', 'Chicken Caesar Salad', 10.99, 'https://www.example.com/caesar-salad.jpg'),
-    ('Main Courses', 'Grilled Salmon', 14.99, 'https://www.example.com/grilled-salmon.jpg'),
-    ('Main Courses', 'Vegetable Stir-Fry', 12.99, 'https://www.example.com/vegetable-stir-fry.jpg'),
-    ('Main Courses', 'Lean Turkey Burger', 11.99, 'https://www.example.com/turkey-burger.jpg'),
-    ('Smoothies', 'Green Energy Smoothie', 5.99, 'https://www.example.com/green-smoothie.jpg'),
-    ('Smoothies', 'Berry Blast Smoothie', 5.99, 'https://www.example.com/berry-smoothie.jpg'),
-    ('Smoothies', 'Mango Tango Smoothie', 5.99, 'https://www.example.com/mango-smoothie.jpg');
+# Establish a connection to MySQL
+conn = mysql.connector.connect(**config)
+
+# Create a cursor object to interact with the database
+cursor = conn.cursor()
+
+# Define a list of food items as tuples (name, price)
+food_items = [
+    ('Donut', 2.50),
+    ('Pigs in a Blanket', 4.00),
+    ('Burrito', 5.50),
+    ('Shake', 3.00),
+    ('Sandwich', 4.50),
+    ('Pancake', 3.25),
+]
+
+# Insert each food item into the FoodItems table
+for item in food_items:
+    name, price = item
+    insert_query = "INSERT INTO FoodItems (name, price) VALUES (%s, %s)"
+    cursor.execute(insert_query, (name, price))
+
+# Commit the changes to the database
+conn.commit()
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
