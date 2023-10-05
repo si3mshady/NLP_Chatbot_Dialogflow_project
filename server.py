@@ -16,13 +16,14 @@ class OrderTrackRequest(BaseModel):
 orders = {}
 
 food_items = {
-    'Donut': 2.50,
-    'Pigs in a Blanket': 4.00,
-    'Burrito': 5.50,
-    'Shake': 3.00,
-    'Sandwich': 4.50,
-    'Pancake': 3.25,
+    1: ('Donut', 2.50),
+    2: ('Pigs in a Blanket', 4.00),
+    3: ('Burrito', 5.50),
+    4: ('Shake', 3.00),
+    5: ('Sandwich', 4.50),
+    6: ('Pancake', 3.25),
 }
+
 
 def json_to_human_readable(json_obj):
     if 'number' in json_obj and 'food-items' in json_obj:
@@ -60,6 +61,12 @@ async def dialogflow_webhook(request: Request):
     # Create a new order dictionary for each session
     if session_id not in orders:
         orders[session_id] = []
+
+    if intent_name == "get.current.order":
+        resp = {
+        "fulfillmentText": f"Here is what you have currenly ordered {str(orders[session_id])} ---- total bill ${calculate_total_bill(orders[session_id])}"
+        }
+        return JSONResponse(content=resp)
 
     # Handle the "order.add" intent
     if intent_name == "order.add":
@@ -109,9 +116,32 @@ def calculate_total_cost(order_items):
         total_cost += item_cost * quantity
     return total_cost
 
+def calculate_total_bill(order_items):
+    total_bill = 0
+    for item in order_items:
+        item_name = item['item_name'].lower()  # Convert item name to lowercase for case insensitivity
+        quantity = item['quantity']
+        # Look up the item ID from the food_items dictionary
+        item_id = None
+        for key, (name, price) in food_items.items():
+            if item_name == name.lower():
+                item_id = key
+                break
+        if item_id is not None:
+            item_price = food_items[item_id][1]
+            total_bill += item_price * quantity
+    return total_bill
+
+
+
 def format_order(food_items_list, quantities):
     formatted_items = []
     for item_name, quantity in zip(food_items_list, quantities):
         formatted_item = f"{quantity} {item_name}"
         formatted_items.append(formatted_item)
     return ', '.join(formatted_items)
+
+
+
+#wip update bill calculations 
+#add delete order a
