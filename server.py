@@ -141,7 +141,9 @@ def format_order(food_items_list, quantities):
         formatted_items.append(formatted_item)
     return ', '.join(formatted_items)
 
-
+#WIP
 
 #wip update bill calculations 
-#add delete order a
+#add delete order 
+#add update order
+#add order status 
