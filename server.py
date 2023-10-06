@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+from insert_order import insert_order
 import re
 
 app = FastAPI()
@@ -97,6 +98,12 @@ async def dialogflow_webhook(request: Request):
         response_text = "Order not found."
         if order_items:
             response_text = f"Order details:\n{format_order(order_items)}\nTotal Cost: ${calculate_total_cost(order_items):.2f}"
+
+
+    elif intent_name == "complete.order":
+        current_orders = orders[session_id]
+        return insert_order(current_orders)
+
 
     else:
         response_text = "Unsupported intent."

@@ -1,6 +1,7 @@
 import mysql.connector as mysql
+from fastapi.responses import JSONResponse
 
-def insert_order(order_data):
+def insert_order(order_data: list):
     try:
         cnx = mysql.connect(
             user='user',
@@ -38,6 +39,18 @@ def insert_order(order_data):
 
         for order in inserted_orders:
             print(f"Order ID: {order['order_id']}, Item ID: {order['item_id']}, Quantity: {order['quantity']}, Total Price: {order['total_price']}")
+        
+
+
+
+
+        resp = {
+            "fulfillmentText": f"Orders inserted successfully! -- all orders {str(inserted_orders)}"
+        }
+
+        return JSONResponse(content=resp)
+
+
 
         cnx.close()
         print("Orders inserted successfully!")
@@ -46,6 +59,6 @@ def insert_order(order_data):
         print(f"Error: {err}")
         cnx.rollback()  # Rollback the transaction in case of an error
 
-if __name__ == "__main__":
-    order_data = [{'item_name': 'shakes', 'quantity': 4.0}, {'item_name': 'pancake', 'quantity': 4.0}]
-    insert_order(order_data)
+# if __name__ == "__main__":
+     # order_data = [{'item_name': 'shakes', 'quantity': 4.0}, {'item_name': 'pancake', 'quantity': 4.0}]
+    # insert_order(order_data)
