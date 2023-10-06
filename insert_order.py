@@ -60,5 +60,8 @@ def insert_order(order_data: list):
         cnx.rollback()  # Rollback the transaction in case of an error
 
 # if __name__ == "__main__":
-     # order_data = [{'item_name': 'shakes', 'quantity': 4.0}, {'item_name': 'pancake', 'quantity': 4.0}]
-    # insert_order(order_data)
+ 
+ #need to modify this as each call shoud create 1 order not several 
+
+#  What I am seeing currently 
+#  Orders inserted successfully! -- all orders [{'order_id': 1, 'item_id': 6, 'quantity': 4, 'total_price': None}, {'order_id': 2, 'item_id': 6, 'quantity': 4, 'total_price': None}, {'order_id': 3, 'item_id': 6, 'quantity': 4, 'total_price': None}, {'order_id': 4, 'item_id': 6, 'quantity': 3, 'total_price': None}, {'order_id': 5, 'item_id': 5, 'quantity': 3, 'total_price': None}]

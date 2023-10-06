@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-from insert_order import insert_order
+# from insert_order import insert_order
+from insert_order_test import insert_order
 import re
+
 
 app = FastAPI()
 
@@ -102,7 +104,7 @@ async def dialogflow_webhook(request: Request):
 
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
-        return insert_order(current_orders)
+        return insert_order(current_orders, session_id)
 
 
     else:

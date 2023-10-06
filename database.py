@@ -25,7 +25,8 @@ def db_setup():
 
     cursor.execute("CREATE TABLE `orders` ("
                    "order_id int AUTO_INCREMENT PRIMARY KEY,"
-                   "item_id int NOT NULL,"
+                   "item_id int NULL,"
+                   "session_id VARCHAR(255),"
                    "quantity int DEFAULT NULL,"
                    "total_price decimal(10,2) DEFAULT NULL"
                    ");")
