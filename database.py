@@ -24,12 +24,13 @@ def db_setup():
                    "(3, 'Burrito', 5.50), (4, 'Shake', 3.00), (5, 'Sandwich', 4.50), (6, 'Pancake', 3.25);")
 
     cursor.execute("CREATE TABLE `orders` ("
-                   "order_id int AUTO_INCREMENT PRIMARY KEY,"
-                   "item_id int NULL,"
-                   "session_id VARCHAR(255),"
+                   "order_id int NULL,"
+                   "item_id int  NULL,"
+                   "session_id TEXT NULL,"
                    "quantity int DEFAULT NULL,"
                    "total_price decimal(10,2) DEFAULT NULL"
                    ");")
+            
 
     # Remove the code for fetching rows from the "orders" table
     cursor.execute("SELECT * FROM orders")

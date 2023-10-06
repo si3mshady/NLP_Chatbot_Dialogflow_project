@@ -104,6 +104,8 @@ async def dialogflow_webhook(request: Request):
 
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
+        orders[session_id] = []
+        #reset orders 
         return insert_order(current_orders, session_id)
 
 

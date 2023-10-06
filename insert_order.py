@@ -11,7 +11,7 @@ def insert_order(order_data: list):
             port=3306
         )
         cursor = cnx.cursor()
-
+        
         for item in order_data:
             item_name = item['item_name']
             quantity = item['quantity']
