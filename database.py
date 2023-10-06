@@ -18,10 +18,11 @@ def db_setup():
                    "name VARCHAR(255) DEFAULT NULL,"
                    "price DECIMAL(10, 2) DEFAULT NULL"
                    ");")
+    
 
     cursor.execute("INSERT INTO `food_items` (item_id, name, price) "
-                   "VALUES (1, 'Donut', 2.50), (2, 'Pigs in a Blanket', 4.00), "
-                   "(3, 'Burrito', 5.50), (4, 'Shake', 3.00), (5, 'Sandwich', 4.50), (6, 'Pancake', 3.25);")
+                   "VALUES (1, 'donuts', 2.50), (2, 'pig in blanket', 4.00), "
+                   "(3, 'burrito', 5.50), (4, 'shake', 3.00), (5, 'sandwich', 4.50), (6, 'pancake', 3.25);")
 
     cursor.execute("CREATE TABLE `orders` ("
                    "order_id int NULL,"
@@ -33,7 +34,7 @@ def db_setup():
             
 
     # Remove the code for fetching rows from the "orders" table
-    cursor.execute("SELECT * FROM orders")
+    cursor.execute("SELECT * FROM food_items")
     for row in cursor.fetchall():
         print(row)
 

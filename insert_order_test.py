@@ -48,6 +48,7 @@ def get_next_order_id():
 
     # Fetching the result
     result = cursor.fetchone()[0]
+    print(f"The result of insert_ order is {result}")
 
     # Closing the cursor
     cursor.close()
@@ -59,7 +60,7 @@ def get_next_order_id():
         return result + 1
 
 
-def insert_order(order_data: list, session_id: str):
+def insert_order(order_data: list, session_id: str, current_order_id: int):
     # print(order_data)
     try:
         cnx = mysql.connect(
@@ -70,9 +71,9 @@ def insert_order(order_data: list, session_id: str):
             port=3306
         )
         cursor = cnx.cursor(dictionary=True)
-        order_id = get_next_order_id()
+        # order_id = get_next_order_id()
 
-        print(f"The order id is {order_id}")
+        # print(f"The order id is {current_order_id}")
         # Insert a new order for the session and get the order ID
         # cursor.execute("INSERT INTO orders (session_id) VALUES (%s)", (session_id,))
         # Executing the SQL query to get the next available order_id
@@ -80,22 +81,39 @@ def insert_order(order_data: list, session_id: str):
         for item in order_data:
             item_name = item['item_name']
             quantity = item['quantity']
-            print(item_name)
+
+            
+            # print(item_name)
             # Retrieve the item_id based on the item_name
-            cursor.execute("SELECT item_id FROM food_items WHERE name = %s", (item_name,))
-            item_id = cursor.fetchone()
-            print(item_id)
+            cursor.execute("SELECT item_id, price FROM food_items WHERE name = %s", (item_name,))
+
+            item_data = cursor.fetchone()
+
+            print(f'here is item id ',item_data)
         
 
-            if item_id:
-                print('inside line 61')
-                item_id = item_id['item_id']
+            if item_data:
+                item_id = item_data['item_id']
+                item_price = item_data['price']
+
+                total_price = float(item_price) * int(quantity)  # Calculate the total price
+                cursor.execute(
+                    "INSERT INTO orders (order_id, item_id, session_id, quantity, total_price) "
+                    "VALUES (%s, %s, %s, %s, %s)",
+                    (int(current_order_id), item_id, session_id, quantity, float (total_price))
+                )
+
+                cnx.commit()
+                # print('inside line 61')
+                # item_id = item_id['item_id']
             
-                total_price = None  # You can calculate the total price based on item price and quantity here
-                print(order_id, item_id, session_id, quantity, total_price)
-                # Insert the item into the order
-                cursor.execute("INSERT INTO orders (order_id, item_id, session_id, quantity) VALUES (%s, %s, %s, %s)",
-                               (order_id, item_id, session_id, quantity))
+                # total_price = None  # You can calculate the total price based on item price and quantity here
+                # print(current_order_id, item_id, session_id, quantity, total_price)
+                # print("total cost ", quantity * total_price)
+                
+                # # Insert the item into the order
+                # cursor.execute("INSERT INTO orders (order_id, item_id, session_id, quantity, total_price) VALUES (%s, %s, %s, %s)",
+                #                (int(current_order_id), item_id, session_id, quantity))
 
                 cnx.commit()  # Commit the transaction
         print_all_items_in_orders()

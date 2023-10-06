@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 # from insert_order import insert_order
-from insert_order_test import insert_order
+from insert_order_test import insert_order, get_next_order_id
 import re
 
 
@@ -17,6 +17,8 @@ class OrderTrackRequest(BaseModel):
 
 # Initialize an empty dictionary to store orders with session IDs as keys
 orders = {}
+global current_order_number
+current_order_number = None
 
 food_items = {
     1: ('Donut', 2.50),
@@ -26,7 +28,6 @@ food_items = {
     5: ('Sandwich', 4.50),
     6: ('Pancake', 3.25),
 }
-
 
 def json_to_human_readable(json_obj):
     if 'number' in json_obj and 'food-items' in json_obj:
@@ -52,6 +53,7 @@ def parse_session_id(payload: dict):
 
 @app.post("/")
 async def dialogflow_webhook(request: Request):
+    global current_order_number
     # Parse the incoming JSON request from Dialogflow
     dialogflow_request = await request.json()
 
@@ -74,6 +76,11 @@ async def dialogflow_webhook(request: Request):
     # Handle the "order.add" intent
     if intent_name == "order.add":
         order_items = orders[session_id]
+        if not current_order_number: #if this value is None resolves 
+            current_order_number = get_next_order_id()
+            print("Here is line 82")
+            print(f'Here is current order number {current_order_number}'  )
+
 
         # Check if both "food-items" and "number" are present
         if "food-items" in params and "number" in params:
@@ -87,6 +94,11 @@ async def dialogflow_webhook(request: Request):
                         "item_name": item_name,
                         "quantity": quantity
                     })
+                
+                #testing to see each item be inserted into db under same order
+                current_orders = orders[session_id]
+                insert_order(current_orders, session_id,current_order_number)
+
                 response_text = f"Added {format_order(food_items_list, quantities) } to the order......all items in order are as follows {str(orders[session_id])}"
             else:
                 response_text = "Invalid input: The number of items and quantities do not match."
@@ -105,8 +117,9 @@ async def dialogflow_webhook(request: Request):
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
         orders[session_id] = []
+        current_order_number = None
         #reset orders 
-        return insert_order(current_orders, session_id)
+        return insert_order(current_orders, session_id,current_order_number)
 
 
     else:
