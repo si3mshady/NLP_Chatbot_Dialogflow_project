@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
 # python3 agent_import_export.py --export-zip ./exports/exported_agent.zip --project-id nlpchatbot-utan 
 
-#unzip ./exports/exported_agent.zip -d ./exports && rm ./exports/exported_agent.zip 
+#unzip ./exports/exported_agent.zip -d ./exports 
 
 # ngrok http 8000
 

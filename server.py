@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 # from insert_order import insert_order
-from insert_order_test import insert_order, get_next_order_id
+from insert_order_test import insert_order, get_next_order_id, delete_items_from_order, print_all_items_in_orders
 import re
 
 
@@ -99,7 +99,7 @@ async def dialogflow_webhook(request: Request):
                 current_orders = orders[session_id]
                 insert_order(current_orders, session_id,current_order_number)
 
-                response_text = f"Added {format_order(food_items_list, quantities) } to the order......all items in order are as follows {str(orders[session_id])}"
+                response_text = f"Added {format_order(food_items_list, quantities) } to order number {current_order_number}......all items in order are as follows {str(orders[session_id])}"
             else:
                 response_text = "Invalid input: The number of items and quantities do not match."
         else:
@@ -119,7 +119,22 @@ async def dialogflow_webhook(request: Request):
         orders[session_id] = []
         current_order_number = None
         #reset orders 
-        return insert_order(current_orders, session_id,current_order_number)
+        response_text = insert_order(current_orders, session_id,current_order_number)
+        resp = {
+        "fulfillmentText": response_text
+        }
+    
+    elif intent_name == "delete.from.order":
+
+        print(params)
+        food_item = params.get('food-items')
+        order_number = params.get('number')
+        response_text = delete_items_from_order(order_number,food_item)
+        all_items = print_all_items_in_orders()
+    
+        resp = {
+        "fulfillmentText": response_text
+        }
 
 
     else:
@@ -165,9 +180,13 @@ def format_order(food_items_list, quantities):
         formatted_items.append(formatted_item)
     return ', '.join(formatted_items)
 
-#WIP
+
 
 #wip update bill calculations 
 #add delete order 
 #add update order
 #add order status 
+
+
+
+# uvicorn server:app --reload
