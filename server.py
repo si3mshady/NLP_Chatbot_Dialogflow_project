@@ -6,8 +6,9 @@ from insert_order_test import insert_order, get_next_order_id, delete_items_from
 import re
 
 
-
 app = FastAPI()
+
+orders = {}
 
 class OrderAddRequest(BaseModel):
     item_name: str
@@ -17,7 +18,7 @@ class OrderTrackRequest(BaseModel):
     order_id: str
 
 # Initialize an empty dictionary to store orders with session IDs as keys
-orders = {}
+
 global current_order_number
 current_order_number = None
 
@@ -55,6 +56,9 @@ def parse_session_id(payload: dict):
 @app.post("/")
 async def dialogflow_webhook(request: Request):
     global current_order_number
+    global orders
+    print(f'all orders temp, {orders}')
+   
     # Parse the incoming JSON request from Dialogflow
     dialogflow_request = await request.json()
 
@@ -63,23 +67,30 @@ async def dialogflow_webhook(request: Request):
     params = dialogflow_request["queryResult"]["parameters"]
     output_context = dialogflow_request['queryResult']['outputContexts']
     session_id = parse_session_id(dialogflow_request)
+    # print(f'session id {session_id}')
+
+    # print(f'This is the orders dictionary {orders}')
 
     # Create a new order dictionary for each session
-    if session_id not in orders:
-        orders[session_id] = []
 
-    if intent_name == "get.current.order":
-        resp = {
-        "fulfillmentText": f"Here is what you have currenly ordered {str(orders[session_id])} ---- total bill ${calculate_total_bill(orders[session_id])}"
-        }
-        return JSONResponse(content=resp)
+    # if session_id not in orders:
+    #     orders[session_id] = []
+
+    # if intent_name == "get.current.order":
+    #     resp = {
+    #     "fulfillmentText": f"Here is what you have currenly ordered {str(orders[session_id])} ---- total bill ${calculate_total_bill(orders[session_id])}"
+    #     }
+    #     return JSONResponse(content=resp)
 
     # Handle the "order.add" intent
     if intent_name == "order.add":
+        if session_id not in orders:
+            orders[session_id] = []
+
         order_items = orders[session_id]
         if not current_order_number: #if this value is None resolves 
             current_order_number = get_next_order_id()
-            print("Here is line 82")
+            # print("Here is line 82")
             print(f'Here is current order number {current_order_number}'  )
 
 
@@ -117,7 +128,7 @@ async def dialogflow_webhook(request: Request):
 
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
-        orders[session_id] = []
+        # orders[session_id] = []
         response_text = insert_order(current_orders, session_id,current_order_number)
         current_order_number = None
         print("This is the response after I complete order", response_text)
@@ -136,13 +147,23 @@ async def dialogflow_webhook(request: Request):
         food_item = params.get('food-items')
         order_number = params.get('number')
         response_text = delete_items_from_order(order_number,food_item)
-        print_all_items_in_orders()
-        
-    
+        # print_all_items_in_orders()
         resp = {
         "fulfillmentText": response_text
         }
         return JSONResponse(content=resp)
+    
+
+    elif intent_name == "list.all.orders.for.elliott.linkedinpost":
+        orders = print_all_items_in_orders()
+
+        resp = {
+        "fulfillmentText": f"Here is a listing of all orders from database + {str(orders) }"
+        }
+        return JSONResponse(content=resp)
+    
+
+    
 
 
     else:
@@ -153,6 +174,8 @@ async def dialogflow_webhook(request: Request):
     }
 
     return JSONResponse(content=resp)
+
+
 
 def calculate_total_cost(order_items):
     total_cost = 0
@@ -196,9 +219,21 @@ def format_order(food_items_list, quantities):
 #add order status 
 
 
-
 # docker-compose up
 #python3 database.py
 # uvicorn server:app --reload
 # ngrok http 8000
 # uvicorn server:app --reload
+
+
+# Food Items legend
+# (1, 'donuts', Decimal('2.50'))
+# (2, 'pig in blanket', Decimal('4.00'))
+# (3, 'burrito', Decimal('5.50'))
+# (4, 'shake', Decimal('3.00'))
+# (5, 'sandwich', Decimal('4.50'))
+# (6, 'pancake', Decimal('3.25'));")
+
+
+
+

@@ -2,6 +2,7 @@ import mysql.connector as mysql
 from fastapi.responses import JSONResponse
 
 def print_all_items_in_orders():
+    all_orders = []
     try:
         cnx = mysql.connect(
             user='user',
@@ -22,11 +23,19 @@ def print_all_items_in_orders():
             item_id = order['item_id']
             quantity = order['quantity']
             total_price = order['total_price']
-
             print(f"Order ID: {order_id}, Item ID: {item_id}, Quantity: {quantity}, Total Price: {total_price}")
+
+            row = f"Order ID: {order_id}, Item ID: {item_id}, Quantity: {quantity}, Total Price: {total_price}"
+            all_orders.append(row)
+
+           
 
         cursor.close()
         cnx.close()
+        return all_orders
+
+
+        
 
         
 
@@ -105,7 +114,7 @@ def insert_order(order_data: list, session_id: str, current_order_id: int):
         cursor.close()
         cnx.close()
 
-        print_all_items_in_orders()
+        # print_all_items_in_orders()
 
         resp = {
             f"Order inserted successfully! Order ID: {current_order_id}"
@@ -199,4 +208,4 @@ def db_setup():
 
 
 
-print_all_items_in_orders()
+# print_all_items_in_orders()
