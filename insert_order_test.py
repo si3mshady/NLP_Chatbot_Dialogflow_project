@@ -28,7 +28,7 @@ def print_all_items_in_orders():
         cursor.close()
         cnx.close()
 
-        return f"Order ID: {order_id}, Item ID: {item_id}, Quantity: {quantity}, Total Price: {total_price}"
+        
 
     except mysql.Error as err:
         print(f"Error: {err}")
@@ -73,20 +73,12 @@ def insert_order(order_data: list, session_id: str, current_order_id: int):
             port=3306
         )
         cursor = cnx.cursor(dictionary=True)
-        # order_id = get_next_order_id()
-
-        # print(f"The order id is {current_order_id}")
-        # Insert a new order for the session and get the order ID
-        # cursor.execute("INSERT INTO orders (session_id) VALUES (%s)", (session_id,))
-        # Executing the SQL query to get the next available order_id
-        
+       
         for item in order_data:
             item_name = item['item_name']
             quantity = item['quantity']
 
-            
-            # print(item_name)
-            # Retrieve the item_id based on the item_name
+        
             cursor.execute("SELECT item_id, price FROM food_items WHERE name = %s", (item_name,))
 
             item_data = cursor.fetchone()
@@ -106,33 +98,25 @@ def insert_order(order_data: list, session_id: str, current_order_id: int):
                 )
 
                 cnx.commit()
-                # print('inside line 61')
-                # item_id = item_id['item_id']
+                              
             
-                # total_price = None  # You can calculate the total price based on item price and quantity here
-                # print(current_order_id, item_id, session_id, quantity, total_price)
-                # print("total cost ", quantity * total_price)
-                
-                # # Insert the item into the order
-                # cursor.execute("INSERT INTO orders (order_id, item_id, session_id, quantity, total_price) VALUES (%s, %s, %s, %s)",
-                #                (int(current_order_id), item_id, session_id, quantity))
-
-                cnx.commit()  # Commit the transaction
-        print_all_items_in_orders()
+        
+       
         cursor.close()
         cnx.close()
 
+        print_all_items_in_orders()
+
         resp = {
-            "fulfillmentText": f"Order inserted successfully! Order ID: {session_id}"
+            f"Order inserted successfully! Order ID: {current_order_id}"
         }
 
-        return JSONResponse(content=resp)
-
+        return resp
+   
     except mysql.Error as err:
         print(f"Error: {err}")
         cnx.rollback()  # Rollback the transaction in case of an error
 
-import mysql.connector as mysql
 
 def database_init():
     db_setup()
@@ -159,7 +143,7 @@ def delete_items_from_order(order_id, food_name):
             cursor.execute("DELETE FROM orders WHERE order_id = %s AND item_id = %s", (order_id, item_id))
             cnx.commit()
             print(f"Deleted {food_name} from order {order_id}")
-            return f"Deleted {food_name} from order {order_id}"
+            return f"Deleted {food_name} from order {order_id} - with help from ChatGPT"
 
         else:
             print(f"{food_name} not found in food_items table")

@@ -6,6 +6,7 @@ from insert_order_test import insert_order, get_next_order_id, delete_items_from
 import re
 
 
+
 app = FastAPI()
 
 class OrderAddRequest(BaseModel):
@@ -117,24 +118,31 @@ async def dialogflow_webhook(request: Request):
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
         orders[session_id] = []
-        current_order_number = None
-        #reset orders 
         response_text = insert_order(current_orders, session_id,current_order_number)
+        current_order_number = None
+        print("This is the response after I complete order", response_text)
+
         resp = {
-        "fulfillmentText": response_text
+        "fulfillmentText": str(response_text)
         }
+
+        return JSONResponse(content=resp)
+
+
     
-    elif intent_name == "delete.from.order":
+    elif intent_name == "delete.menu.item":
 
         print(params)
         food_item = params.get('food-items')
         order_number = params.get('number')
         response_text = delete_items_from_order(order_number,food_item)
-        all_items = print_all_items_in_orders()
+        print_all_items_in_orders()
+        
     
         resp = {
         "fulfillmentText": response_text
         }
+        return JSONResponse(content=resp)
 
 
     else:
@@ -189,4 +197,8 @@ def format_order(food_items_list, quantities):
 
 
 
+# docker-compose up
+#python3 database.py
+# uvicorn server:app --reload
+# ngrok http 8000
 # uvicorn server:app --reload
