@@ -24,15 +24,12 @@ def print_all_items_in_orders():
             quantity = order['quantity']
             total_price = order['total_price']
             print(f"Order ID: {order_id}, Item ID: {item_id}, Quantity: {quantity}, Total Price: {total_price}")
-
             row = f"Order ID: {order_id}, Item ID: {item_id}, Quantity: {quantity}, Total Price: {total_price}"
-            all_orders.append(row)
-
-           
-
+            if row not in all_orders:
+                all_orders.append(row)
         cursor.close()
         cnx.close()
-        return all_orders
+        return f"Heres a listing of all orders in database {str(all_orders)} - review print statement."
 
 
         
@@ -59,7 +56,7 @@ def get_next_order_id():
 
     # Fetching the result
     result = cursor.fetchone()[0]
-    print(f"The result of insert_ order is {result}")
+    print(f"The result of insert_order is {result}")
 
     # Closing the cursor
     cursor.close()

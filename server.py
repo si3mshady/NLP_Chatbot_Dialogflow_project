@@ -118,20 +118,20 @@ async def dialogflow_webhook(request: Request):
             response_text = "Invalid input: Missing 'food-items' or 'number'."
 
     # Handle the "order.track" intent
-    elif intent_name == "order.track":
-        # Implement tracking logic here
-        order_items = orders.get(session_id, [])
-        response_text = "Order not found."
-        if order_items:
-            response_text = f"Order details:\n{format_order(order_items)}\nTotal Cost: ${calculate_total_cost(order_items):.2f}"
+    # elif intent_name == "order.track":
+    #     # Implement tracking logic here
+    #     order_items = orders.get(session_id, [])
+    #     response_text = "Order not found."
+    #     if order_items:
+    #         response_text = f"Order details:\n{format_order(order_items)}\nTotal Cost: ${calculate_total_cost(order_items):.2f}"
 
 
     elif intent_name == "complete.order":
         current_orders = orders[session_id]
-        # orders[session_id] = []
+        orders[session_id] = []
         response_text = insert_order(current_orders, session_id,current_order_number)
         current_order_number = None
-        print("This is the response after I complete order", response_text)
+        # print("This is the response after I complete order", response_text)x
 
         resp = {
         "fulfillmentText": str(response_text)
@@ -139,31 +139,27 @@ async def dialogflow_webhook(request: Request):
 
         return JSONResponse(content=resp)
 
-
-    
     elif intent_name == "delete.menu.item":
 
         print(params)
         food_item = params.get('food-items')
         order_number = params.get('number')
         response_text = delete_items_from_order(order_number,food_item)
-        # print_all_items_in_orders()
+        message =  print_all_items_in_orders()
         resp = {
         "fulfillmentText": response_text
         }
         return JSONResponse(content=resp)
     
 
-    elif intent_name == "list.all.orders.for.elliott.linkedinpost":
-        orders = print_all_items_in_orders()
 
-        resp = {
-        "fulfillmentText": f"Here is a listing of all orders from database + {str(orders) }"
-        }
-        return JSONResponse(content=resp)
-    
+    # elif intent_name == "list.all.orders.for.elliott.linkedinpost":
+    #     orders = print_all_items_in_orders()
 
-    
+    #     resp = {
+    #     "fulfillmentText": f"Here is a listing of all orders from database + {str(orders) }"
+    #     }
+    #     return JSONResponse(content=resp)
 
 
     else:
